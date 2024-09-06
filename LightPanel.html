@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Temperature and Brightness Control</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+            transition: background-color 0.3s, filter 0.3s;
+        }
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        label {
+            font-family: Arial, sans-serif;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <label for="colorTemp">Color Temperature (K): <span id="tempValue">6500</span></label>
+        <input type="range" id="colorTemp" min="3200" max="6500" value="6500">
+
+        <label for="brightness">Brightness (%): <span id="brightnessValue">100</span></label>
+        <input type="range" id="brightness" min="0" max="100" value="100">
+    </div>
+
+    <script>
+        const colorTempSlider = document.getElementById('colorTemp');
+        const brightnessSlider = document.getElementById('brightness');
+        const tempValueSpan = document.getElementById('tempValue');
+        const brightnessValueSpan = document.getElementById('brightnessValue');
+
+        function updateBackground() {
+            const temp = colorTempSlider.value;
+            const brightness = brightnessSlider.value / 100;
+
+            // Calculate RGB values subtractively from 6500K (pure white)
+            let r, g, b;
+
+            if (temp <= 6500) {
+                // Calculate subtractive components from full white
+                const ratio = (6500 - temp) / (6500 - 3200);
+                r = 255;
+                g = Math.round(255 - (105 * ratio)); // Reduced green for warmth
+                b = Math.round(255 - (200 * ratio)); // Reduced blue for warmth
+            } else {
+                r = 255;
+                g = 255;
+                b = 255;
+            }
+
+            // Apply the color temperature and brightness
+            document.body.style.backgroundColor = `rgb(${Math.round(r * brightness)}, ${Math.round(g * brightness)}, ${Math.round(b * brightness)})`;
+        }
+
+        colorTempSlider.addEventListener('input', () => {
+            tempValueSpan.textContent = colorTempSlider.value;
+            updateBackground();
+        });
+
+        brightnessSlider.addEventListener('input', () => {
+            brightnessValueSpan.textContent = brightnessSlider.value;
+            updateBackground();
+        });
+
+        // Initialize background color on load
+        updateBackground();
+    </script>
+</body>
+</html>
